@@ -194,9 +194,12 @@ function kingsProtection(board,currentX,currentY,nextX,nextY)
     var tempPiece = board[nextId].piece
     var tempPieceColor = board[nextId].pieceColor
 
+    // board[id].piece = piece   
+    // board[id].pieceColor =  pieceColor
+    tempBoard[nextId].piece = tempBoard[currentId].piece
+    tempBoard[nextId].pieceColor =  tempBoard[currentId].pieceColor
 
-
-    tempBoard = setPiece(tempBoard,nextId,tempBoard[currentId].piece,tempBoard[currentId].pieceColor)
+    // tempBoard = setPiece(tempBoard,nextId,tempBoard[currentId].piece,tempBoard[currentId].pieceColor)
  
     tempBoard  =resetSquare(tempBoard,currentId)
 
@@ -209,8 +212,9 @@ function kingsProtection(board,currentX,currentY,nextX,nextY)
     selectedSquare.pieceColor = currentPlayer
 
 
-    tempBoard = setPiece(tempBoard,currentId,tempBoard[nextId].piece,tempBoard[nextId].pieceColor)
-
+    // tempBoard = setPiece(tempBoard,currentId,tempBoard[nextId].piece,tempBoard[nextId].pieceColor)
+    tempBoard[currentId].piece = tempBoard[nextId].piece
+    tempBoard[currentId].pieceColor =  tempBoard[nextId].pieceColor
     // tempBoard  =resetSquare(tempBoard,nextId)
 
     board[nextId].piece  = tempPiece
@@ -359,7 +363,10 @@ return board
 function setPiece (board,id,piece,pieceColor){ 
     board[id].piece = piece   
     board[id].pieceColor =  pieceColor
-    board[id].lastMoveTurn = gameTurn
+
+        board[id].lastMoveTurn = gameTurn
+
+
 return board
 }
 
@@ -726,7 +733,10 @@ useEffect ( ()=>{
 
 
 var promoteElements = promotePieces.map((piece)=>{
-    return(<div className={`square ${currentPlayer}--${piece} promote`} onClick = {promoteHandler} id = {piece}></div>)
+  changePlayer()
+    var player = currentPlayer
+    changePlayer()
+    return(<div className={`square ${player}--${piece} promote`} onClick = {promoteHandler} id = {piece}></div>)
 })
 
 
@@ -736,10 +746,15 @@ const squareElements =useSquares.map((square)=>{
     if (square.piece){
     var pieceClass = `${square.pieceColor}--${square.piece}`
     }
+    let x = square.id%8
+        let y  = 8 - Math.floor(square.id/8)
+            let squareLetters= ["a","b","c","d","e","f","g","e"]
     return(     
                   
                 <div className = {`square ${square.selected ? "red": square.color} ${pieceClass}`}  id={square.id} onClick = {action}> 
-                    {square.id}
+
+                    {y===1? `${squareLetters[x]}`:""}
+                                        {x=== 0 ? `${y}`:""}
                 </div>
   
                 
@@ -751,7 +766,7 @@ const squareElements =useSquares.map((square)=>{
 
 const moveListElements = moveList.map(move=>{
     let x = move.targetId%8
-    let y  = Math.floor(move.targetId/8)
+    let y  = 8 - Math.floor(move.targetId/8)
     let squareLetters= ["a","b","c","d","e","f","g","e"]
     
     return (<div><p className = { move.pieceColor==="white" ? "white--move" : "black--move"}>{`${move.piece} ${squareLetters[x]}${y}`}</p></div>)
@@ -776,14 +791,14 @@ function resetHandler(e){
     if (e.target.id ==="draw"){
         setWinner({winner:'',reason:"draw"})
 
-                console.log(winner)
+
     }
     else if (e.target.id ==="surrender"){
         console.log("what")
         changePlayer()
         setWinner({winner:currentPlayer,reason:"resign"})
 
-        console.log(winner)
+
     }
         currentPlayer = "white"
         setDerp(prev => (prev +1))
@@ -804,7 +819,7 @@ return(
             <div onClick = {startMenuToggle} className = {`start`}><p>{`start`}</p>
                         
             <h5> <span style = {{color:winner.winner}}>{`${winner.winner}`} <br></br> </span>{` ${winner.winner ? "won" : ""}`} </h5>
-            <p className="">{` ${winner.winner ? `by  ${winner.reason}` : ""}`}</p>
+            <p className="">{` ${winner.winner ? `by  ${winner.reason}` : `${winner.reason}`}`}</p>
             
             
             
